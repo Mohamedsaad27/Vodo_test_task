@@ -17,16 +17,16 @@ class NoteController extends Controller
     public function store(NoteRequest $request)
     {
         auth()->user()->notes()->create($request->validated());
-        return redirect()->route('notes.index')->with('success', 'Note added successfully');
+        return redirect()->route('notes.index')->with('successCreate', 'Note added successfully');
     }
     public function update(NoteRequest $request, Note $note)
     {
         $note->update($request->validated());
-        return redirect()->route('notes.index')->with('success', 'Note updated successfully');
+        return redirect()->route('notes.index')->with('successUpdate', 'Note updated successfully');
     }
     public function destroy(Note $note)
     {
         $note->delete();
-        return redirect()->route('notes.index')->with('success', 'Note deleted successfully');
+        return redirect()->route('notes.index')->with('successDelete', 'Note deleted successfully');
     }
 }

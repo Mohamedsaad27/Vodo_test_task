@@ -37,7 +37,7 @@ class NoteController extends Controller
             $note = $user->notes()->create([
                 'content' => $validatedData['content'],
             ]);
-            return $this->successResponse($note, 'Note created Successfully', 201);
+            return redirect()->route('notes.index')->with('successCreate', 'Note created successfully');
         } catch (\Exception $exception) {
             return $this->errorResponse($exception->getMessage(), 500);
         }
