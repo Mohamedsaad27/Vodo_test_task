@@ -59,7 +59,12 @@
                                                     @method('PUT')
                                                     <div class="form-group">
                                                         <label for="content">Content</label>
-                                                        <input type="text" class="form-control" id="content" name="content" value="{{ $note->content }}" required>
+                                                        <input type="text" class="form-control" id="content" name="content" value="{{ $note->content }}" >
+                                                        @error('content')
+                                                             <span class="text-xs text-red-600 dark:text-red-400">
+                                                             {{ $message }}
+                                                     </span>
+                                                        @enderror
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -93,7 +98,12 @@
                         @csrf
                         <div class="form-group">
                             <label for="content">Content</label>
-                            <input type="text" class="form-control" id="content" name="content" required>
+                            <input type="text" class="form-control" id="content" name="content" >
+                            @error('content')
+                            <span class="text-xs text-red-600 dark:text-red-400">
+                                    {{ $message }}
+                                </span>
+                            @enderror
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
