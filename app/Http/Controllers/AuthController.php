@@ -14,18 +14,10 @@ class AuthController extends Controller
 {
     use HandleApiResponse;
 
-    public function register(Request $request)
+    public function register(StoreUserRequest $request)
     {
         try {
-            $validator = Validator::make($request->all(),[
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6',
-            ]);
-            if ($validator->fails()){
-                return response()->json($validator->errors(), 422);
-            }
-            $validated = $validator->validated();
+            $validated = $request->validated();
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
