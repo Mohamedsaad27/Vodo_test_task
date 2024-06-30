@@ -2,55 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\HandleApiResponse;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\UpdateProfileRequest;
-use App\Http\Requests\UpdatePasswordRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    use HandleApiResponse;
-    public function show()
+    /**
+     * Display the user's profile form.
+     */
+    public function edit(Request $request): View
     {
-        try {
-            $user = Auth::user();
-            return $this->successResponse(['user' => $user],'User retrieved Successfully',200);
-        }catch (\Exception $exception){
-            return $this->errorResponse($exception->getMessage(),500);
-        }
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
     }
 
-    public function update(UpdateProfileRequest $request)
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        try {
-            $user = Auth::user();
-            $validated = $request->validated();
-            $user->update([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-            ]);
-            return $this->successResponse(['user' => $user], 'Profile updated successfully', 200);
-        }catch (\Exception $exception){
-            return $this->errorResponse($exception->getMessage(),500);
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
         }
+
+        $request->user()->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    public function updatePassword(UpdatePasswordRequest $request)
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
     {
-        try {
-            $user = Auth::user();
-            $validated = $request->validated();
-            if(!Hash::check($validated['old_password'],$user->password)){
-                return $this->errorResponse('Invalid old password.', 422);
-            }
-            $user->update([
-                'password' => Hash::make($validated['password']),
-            ]);
-            return $this->successResponse(null,'Password updated successfully',200);
-        }catch (\Exception $exception){
-            return $this->errorResponse($exception->getMessage(),500);
-        }
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
     }
 }

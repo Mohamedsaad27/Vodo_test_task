@@ -13,7 +13,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     use HandleApiResponse;
-
     public function register(StoreUserRequest $request)
     {
         try {
@@ -30,7 +29,6 @@ class AuthController extends Controller
 
         }
     }
-
     public function login(Request $request)
     {
         try {
@@ -44,13 +42,11 @@ class AuthController extends Controller
             return $this->errorResponse($exception->getMessage(),500);
         }
     }
-
     public function refreshToken()
     {
         $token = JWTAuth::parseToken()->refresh();
         return $this->successResponse(['token' => $token], 'Token refreshed successfully');
     }
-
     public function logout()
     {
         try {

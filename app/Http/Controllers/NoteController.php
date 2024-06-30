@@ -23,7 +23,6 @@ class NoteController extends Controller
             return $this->errorResponse($exception->getMessage(),500);
         }
     }
-
     public function store(Request $request)
     {
         try {
