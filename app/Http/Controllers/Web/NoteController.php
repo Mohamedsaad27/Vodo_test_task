@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\NoteRequest;
 use App\Models\Note;
 use Illuminate\Http\Request;
 
@@ -13,24 +14,14 @@ class NoteController extends Controller
         $notes = auth()->user()->notes;
         return view('notes.index', compact('notes'));
     }
-    public function store(Request $request)
+    public function store(NoteRequest $request)
     {
-        $request->validate([
-            'content' => 'required|string|max:255',
-        ]);
-        auth()->user()->notes()->create([
-            'content' => $request->content,
-        ]);
+        auth()->user()->notes()->create($request->validated());
         return redirect()->route('notes.index')->with('success', 'Note added successfully');
     }
-    public function update(Request $request, Note $note)
+    public function update(NoteRequest $request, Note $note)
     {
-        $request->validate([
-            'content' => 'required|string|max:255',
-        ]);
-        $note->update([
-            'content' => $request->input('content'),
-        ]);
+        $note->update($request->validated());
         return redirect()->route('notes.index')->with('success', 'Note updated successfully');
     }
     public function destroy(Note $note)
